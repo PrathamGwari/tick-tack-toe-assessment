@@ -1,6 +1,7 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { useEffect, useState } from "react";
+import { TextField } from "@mui/material";
 
 // Define playerConfig outside the App component
 const playerConfig = [
@@ -115,28 +116,24 @@ function App() {
           <div className="player-name">{currentPlayer.name}'s Turn</div>
         </div>
         <div className="settings" style={{ display: "flex", gap: "10px" }}>
-          <div>
-            <label>Grid Size: </label>
-            <input
-              type="number"
-              value={gridSize}
-              onChange={handleGridSizeChange}
-              min="3"
-              max="10"
-              style={{ width: "50px" }}
-            />
-          </div>
-          <div>
-            <label>Winning Criteria: </label>
-            <input
-              type="number"
-              value={winningCriteria}
-              onChange={handleWinningCriteriaChange}
-              min="3"
-              max={gridSize}
-              style={{ width: "50px" }}
-            />
-          </div>
+          <TextField
+            label="Grid Size"
+            type="number"
+            value={gridSize}
+            onChange={handleGridSizeChange}
+            inputProps={{ min: 3, max: 7 }}
+            style={{ width: "150px" }}
+            placeholder="Grid Size"
+          />
+          <TextField
+            label="Winning Criteria"
+            type="number"
+            value={winningCriteria}
+            onChange={handleWinningCriteriaChange}
+            inputProps={{ min: 3, max: gridSize }}
+            style={{ width: "150px" }}
+            placeholder="Winning Criteria"
+          />
           <button
             onClick={() => resetGame(gridSize)}
             style={{
