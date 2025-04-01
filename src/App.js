@@ -21,7 +21,7 @@ const playerConfig = [
   },
   {
     id: 3,
-    symbol: "@",
+    symbol: "#",
     name: "Player 3",
     color: "green",
   },
