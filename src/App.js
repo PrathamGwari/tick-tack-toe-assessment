@@ -57,7 +57,17 @@ function GridRow({ size, currentPlayer, setTurnCount }) {
             }}
             className="grid-cell-button"
             onClick={(event) => {
-              event.target.innerText = currentPlayer.symbol;
+              event.target.innerHTML = `<div style="
+                background-color: ${currentPlayer.color};
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #fff;
+                font-weight: bold;
+              ">${currentPlayer.symbol}</div>`;
               setTurnCount((prev) => prev + 1);
             }}
           ></button>
@@ -139,7 +149,12 @@ function App() {
             className="App"
           >
             {Array.from({ length: gridSize }).map((_, index) => (
-              <GridRow key={index} size={gridSize} currentPlayer={currentPlayer} setTurnCount={setTurnCount} />
+              <GridRow
+                key={index}
+                size={gridSize}
+                currentPlayer={currentPlayer}
+                setTurnCount={setTurnCount}
+              />
             ))}
           </div>
         </div>
