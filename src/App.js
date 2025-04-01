@@ -40,31 +40,37 @@ function App() {
   }, [turnCount]);
 
   useEffect(() => {
-    const winResults = checkWin(gameGrid, currentPlayer, winningCriteria);
-    if (winResults) {
-      alert(`${currentPlayer.name} wins!`);
+    if (turnCount > 0) {
+      console.log("grid changed");
+      const winResults = checkWin(gameGrid, currentPlayer, winningCriteria);
+      if (winResults) {
+        alert(`${currentPlayer.name} wins!`);
+        resetGame(gridSize);
+      }
     }
-    setTurnCount((prev) => prev + 1);
   }, [gameGrid]);
 
   const handleGridSizeChange = (e) => {
     const newSize = parseInt(e.target.value, 10);
     setGridSize(newSize);
-    resetGame(newSize, winningCriteria);
+    resetGame(newSize);
   };
 
   const handleWinningCriteriaChange = (e) => {
     const newCriteria = parseInt(e.target.value, 10);
-    console.log("winning criteria changed", e.target.value);
     setWinningCriteria(newCriteria);
-    resetGame(gridSize, newCriteria);
+    resetGame(gridSize);
   };
 
-  const resetGame = (newGridSize, newWinningCriteria) => {
+  const resetGame = (newGridSize = gridSize) => {
     setGameGrid(
       Array.from({ length: newGridSize }, () => Array(newGridSize).fill(""))
     );
     setTurnCount(0);
+    setCurrentPlayer(playerConfig[0]); // Reset to the first player
+    document.querySelectorAll(".grid-cell-button").forEach((button) => {
+      button.innerHTML = "";
+    });
   };
 
   return (
@@ -131,6 +137,19 @@ function App() {
               style={{ width: "50px" }}
             />
           </div>
+          <button
+            onClick={() => resetGame(gridSize)}
+            style={{
+              padding: "5px 10px",
+              backgroundColor: "#007bff",
+              color: "#fff",
+              border: "none",
+              borderRadius: "5px",
+              cursor: "pointer",
+            }}
+          >
+            Reset Game
+          </button>
         </div>
       </div>
       <div className="game-grid-container">
@@ -228,6 +247,7 @@ function GridRow({
                     .toLowerCase();
                   return newGrid;
                 });
+                setTurnCount((prev) => prev + 1);
               }
             }}
           ></button>
