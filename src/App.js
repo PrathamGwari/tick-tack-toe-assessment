@@ -2,7 +2,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import { useEffect, useState } from "react";
 
-const gridSize = 5;
+// Define playerConfig outside the App component
 const playerConfig = [
   {
     id: 1,
@@ -23,7 +23,152 @@ const playerConfig = [
     color: "green",
   },
 ];
-const winningCriteria = 3;
+
+function App() {
+  const [gridSize, setGridSize] = useState(5);
+  const [winningCriteria, setWinningCriteria] = useState(3);
+  const [turnCount, setTurnCount] = useState(0);
+  const [currentPlayer, setCurrentPlayer] = useState(
+    playerConfig[turnCount % playerConfig.length]
+  );
+  const [gameGrid, setGameGrid] = useState(
+    Array.from({ length: gridSize }, () => Array(gridSize).fill(""))
+  );
+
+  useEffect(() => {
+    setCurrentPlayer(playerConfig[turnCount % playerConfig.length]);
+  }, [turnCount]);
+
+  useEffect(() => {
+    const winResults = checkWin(gameGrid, currentPlayer, winningCriteria);
+    if (winResults) {
+      alert(`${currentPlayer.name} wins!`);
+    }
+    setTurnCount((prev) => prev + 1);
+  }, [gameGrid]);
+
+  const handleGridSizeChange = (e) => {
+    const newSize = parseInt(e.target.value, 10);
+    setGridSize(newSize);
+    resetGame(newSize, winningCriteria);
+  };
+
+  const handleWinningCriteriaChange = (e) => {
+    const newCriteria = parseInt(e.target.value, 10);
+    console.log("winning criteria changed", e.target.value);
+    setWinningCriteria(newCriteria);
+    resetGame(gridSize, newCriteria);
+  };
+
+  const resetGame = (newGridSize, newWinningCriteria) => {
+    setGameGrid(
+      Array.from({ length: newGridSize }, () => Array(newGridSize).fill(""))
+    );
+    setTurnCount(0);
+  };
+
+  return (
+    <>
+      <div
+        className="header"
+        style={{
+          padding: "10px",
+          backgroundColor: "#f8f9fa",
+          borderBottom: "2px solid #e9ecef",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          fontSize: "20px",
+          fontWeight: "bold",
+        }}
+      >
+        <div
+          className="player-info"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+          }}
+        >
+          <div
+            className="player-symbol"
+            style={{
+              backgroundColor: currentPlayer.color,
+              width: "30px",
+              height: "30px",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#fff",
+              fontWeight: "bold",
+            }}
+          >
+            {currentPlayer.symbol}
+          </div>
+          <div className="player-name">{currentPlayer.name}'s Turn</div>
+        </div>
+        <div className="settings" style={{ display: "flex", gap: "10px" }}>
+          <div>
+            <label>Grid Size: </label>
+            <input
+              type="number"
+              value={gridSize}
+              onChange={handleGridSizeChange}
+              min="3"
+              max="10"
+              style={{ width: "50px" }}
+            />
+          </div>
+          <div>
+            <label>Winning Criteria: </label>
+            <input
+              type="number"
+              value={winningCriteria}
+              onChange={handleWinningCriteriaChange}
+              min="3"
+              max={gridSize}
+              style={{ width: "50px" }}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="game-grid-container">
+        <div
+          style={{
+            height: "90vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          className="App"
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            className="App"
+          >
+            {Array.from({ length: gridSize }).map((_, index) => (
+              <GridRow
+                key={index}
+                columnIndex={index}
+                size={gridSize}
+                currentPlayer={currentPlayer}
+                setTurnCount={setTurnCount}
+                gameGrid={gameGrid}
+                setGameGrid={setGameGrid}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
 
 function GridRow({
   columnIndex,
@@ -92,105 +237,6 @@ function GridRow({
   );
 }
 
-function App() {
-  const [turnCount, setTurnCount] = useState(0);
-  const [currentPlayer, setCurrentPlayer] = useState(
-    playerConfig[turnCount % playerConfig.length]
-  );
-  const [gameGrid, setGameGrid] = useState(
-    Array.from({ length: gridSize }, () => Array(gridSize).fill(""))
-  );
-
-  useEffect(() => {
-    setCurrentPlayer(playerConfig[turnCount % playerConfig.length]);
-  }, [turnCount]);
-
-  useEffect(() => {
-    const winResults = checkWin(gameGrid, currentPlayer, winningCriteria);
-    console.log("check win results", winResults);
-    if (winResults) {
-      alert(`${currentPlayer.name} wins!`);
-    }
-    setTurnCount((prev) => prev + 1);
-  }, [gameGrid]);
-  return (
-    <>
-      <div
-        className="header"
-        style={{
-          padding: "10px",
-          backgroundColor: "#f8f9fa",
-          borderBottom: "2px solid #e9ecef",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          fontSize: "20px",
-          fontWeight: "bold",
-        }}
-      >
-        <div
-          className="player-info"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-          }}
-        >
-          <div
-            className="player-symbol"
-            style={{
-              backgroundColor: currentPlayer.color,
-              width: "30px",
-              height: "30px",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "#fff",
-              fontWeight: "bold",
-            }}
-          >
-            {currentPlayer.symbol}
-          </div>
-          <div className="player-name">{currentPlayer.name}'s Turn</div>
-        </div>
-      </div>
-      <div className="game-grid-container">
-        <div
-          style={{
-            height: "90vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-          className="App"
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            className="App"
-          >
-            {Array.from({ length: gridSize }).map((_, index) => (
-              <GridRow
-                key={index}
-                columnIndex={index}
-                size={gridSize}
-                currentPlayer={currentPlayer}
-                setTurnCount={setTurnCount}
-                gameGrid={gameGrid}
-                setGameGrid={setGameGrid}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
 function checkWin(gameGrid, currentPlayer, winningCriteria) {
   const symbol = currentPlayer.symbol.toLowerCase();
   const checkConsecutive = (arr) =>
@@ -198,17 +244,15 @@ function checkWin(gameGrid, currentPlayer, winningCriteria) {
       .join("")
       .match(new RegExp(`(${symbol})\\1{${winningCriteria - 1}}`, "g"));
 
-  console.log("gameGrid", gameGrid);
-  console.log("checking win for player", currentPlayer);
   // Check rows
-  for (let row = 0; row < gridSize; row++) {
+  for (let row = 0; row < gameGrid.length; row++) {
     if (checkConsecutive(gameGrid[row])) {
       return true;
     }
   }
 
   // Check columns
-  for (let col = 0; col < gridSize; col++) {
+  for (let col = 0; col < gameGrid.length; col++) {
     const column = gameGrid.map((row) => row[col]);
     if (checkConsecutive(column)) {
       return true;
@@ -218,9 +262,9 @@ function checkWin(gameGrid, currentPlayer, winningCriteria) {
   // Check diagonals
   let diagonal1 = [];
   let diagonal2 = [];
-  for (let i = 0; i < gridSize; i++) {
+  for (let i = 0; i < gameGrid.length; i++) {
     diagonal1.push(gameGrid[i][i]);
-    diagonal2.push(gameGrid[i][gridSize - 1 - i]);
+    diagonal2.push(gameGrid[i][gameGrid.length - 1 - i]);
   }
   if (checkConsecutive(diagonal1) || checkConsecutive(diagonal2)) {
     return true;
